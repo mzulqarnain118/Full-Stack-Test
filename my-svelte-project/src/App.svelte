@@ -1,22 +1,50 @@
 <script>
   import { onMount } from 'svelte';
+  import DOMPurify from 'dompurify';
+
   let cryptoData = [];
   let loading = true;
   let error = null;
+  let page = 1;
+  const perPage = 10;
+  const apiUrl = process.env.VITE_API_URL;
 
-  onMount(async () => {
+  async function fetchCryptoData(page) {
+    loading = true;
+    error = null;
     try {
-      const response = await fetch('http://localhost:8000/cryptos');
+      const response = await fetch(`${apiUrl}/cryptos?page=${page}&per_page=${perPage}`);
       if (!response.ok) {
         throw new Error('Failed to fetch data');
       }
-      cryptoData = await response.json();
+      const data = await response.json();
+      cryptoData = data.map(item => ({
+        ...item,
+        name: DOMPurify.sanitize(item.name),
+        current_price: item.current_price
+      }));
     } catch (err) {
       error = err.message;
     } finally {
       loading = false;
     }
+  }
+
+  onMount(() => {
+    fetchCryptoData(page);
   });
+
+  function nextPage() {
+    page += 1;
+    fetchCryptoData(page);
+  }
+
+  function prevPage() {
+    if (page > 1) {
+      page -= 1;
+      fetchCryptoData(page);
+    }
+  }
 </script>
 
 <main>
@@ -42,6 +70,11 @@
           </li>
         {/each}
       </ul>
+      <div class="pagination">
+        <button on:click={prevPage} disabled={page === 1}>Previous</button>
+        <span>Page {page}</span>
+        <button on:click={nextPage}>Next</button>
+      </div>
     {/if}
   </section>
 </main>
@@ -134,6 +167,32 @@
 
   .error {
     color: red;
+    font-size: 1.2em;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1em;
+  }
+
+  .pagination button {
+    padding: 0.5em 1em;
+    margin: 0 0.5em;
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+
+  .pagination span {
     font-size: 1.2em;
   }
 </style>

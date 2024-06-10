@@ -34,30 +34,47 @@ full-stack-test-project/
    cd my-svelte-project
    ```
 
-2. Install dependencies:
+2. Setup enviroment variables
+
+   1. Create a .env file in the root of your project directory.
+   2. Copy the contents from the example.env file included in this repository.
+   3. Replace the dummy values in the .env file with your actual environment variables.
+
+3. Install dependencies:
 
    ```bash
    npm install
    ```
 
-3. Run the development server:
+4. Run the development server:
 
    ```bash
    npm run dev
    ```
 
-4. The frontend application will be available at `http://localhost:5000`.
+5. The frontend application will be available at `http://localhost:5000`.
 
 ### Project Structure
 
 - `public/`: Contains static assets
 - `src/`: Contains the Svelte components and main application code
   - `App.svelte`: Main Svelte component that fetches and displays cryptocurrency data
+  - `App.test.js`: Test file for the App component
   - `main.js`: Entry point for the Svelte application
 
 ### Fetching Data from Backend
 
 The frontend fetches cryptocurrency data from the backend FastAPI server running at `http://localhost:8000/cryptos`.
+
+### Adding Tests for Frontend (Svelte)
+
+For the frontend, we can use a testing library like `Jest` along with `svelte-testing-library`.
+
+#### 1. Install Testing Dependencies
+
+```bash
+npm install --save-dev jest @testing-library/svelte @testing-library/jest-dom
+```
 
 ## Backend (FastAPI)
 
